@@ -2,10 +2,12 @@
 
 DummyJSON can be used with : https://dummyjson.com/docs 
 
-## Folder Structure
+# Project Structure
 
-```
-vue-product-app/
+This is the file structure for the Vue product app:
+
+
+```vue-product-app/
 ├── public/
 ├── src/
 │   ├── assets/

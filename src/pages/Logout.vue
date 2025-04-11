@@ -12,7 +12,8 @@
   const router = useRouter()
   
   onMounted(() => {
-    localStorage.removeItem('token')
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('refreshToken');
     router.push('/')
   })
   </script>

@@ -3,6 +3,7 @@ import Login from '../pages/Login.vue'
 import ProductList from '../pages/ProductList.vue'
 import ProductDetail from '../pages/ProductDetail.vue'
 import Logout from '../pages/Logout.vue'
+import { isTokenExpired, refreshAccessToken } from '../api/axiosInstance';
 
 const routes = [
   { path: '/', name: 'Login', component: Login },
@@ -27,28 +28,31 @@ const router = createRouter({
 })
 
 // 🔒 Navigation Guard
-router.beforeEach((to, from, next) => {
-  const token = localStorage.getItem('token')
-  const tokenExpiry = localStorage.getItem('tokenExpiry')
+router.beforeEach(async (to, from, next) => {
+  let accessToken = localStorage.getItem('accessToken');
 
-  // Check if the token is expired
-  if (token && tokenExpiry && Date.now() > tokenExpiry) {
-    localStorage.removeItem('token')
-    localStorage.removeItem('tokenExpiry')
-    return next({ path: '/' }) // Redirect to login if token is expired
+  if (accessToken && isTokenExpired(accessToken)) {
+    try {
+      accessToken = await refreshAccessToken();
+    } catch (err) {
+      console.error('Token refresh failed, redirecting to login');
+      localStorage.removeItem('accessToken');
+      localStorage.removeItem('refreshToken');
+      return next({ path: '/' });
+    }
   }
 
-  // If route requires auth and no token, redirect to login
-  if (to.meta.requiresAuth && !token) {
-    return next({ path: '/' })
+  // After refreshing (or if not expired)
+  if (to.meta.requiresAuth && !accessToken) {
+    return next({ path: '/' });
   }
 
-  // If logged in and trying to go to login page, redirect to /products
-  if (token && to.path === '/') {
-    return next({ path: '/products' })
+  if (accessToken && to.path === '/') {
+    return next({ path: '/products' });
   }
 
-  next()
-})
+  next();
+});
+
 
 export default router

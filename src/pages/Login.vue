@@ -51,11 +51,9 @@
    
       const token = res.data.accessToken
       const refreshToken = res.data.refreshToken
-      const expiryTime = Date.now() + 5 * 60 * 1000  // 5 minutes expiry
 
-      localStorage.setItem('token', token)
+      localStorage.setItem('accessToken', token)
       localStorage.setItem('refreshToken', refreshToken)
-      localStorage.setItem('tokenExpiry', expiryTime)
 
       router.push('/products')
       
